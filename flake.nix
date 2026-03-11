@@ -19,11 +19,15 @@
     pkgs   = nixpkgs.legacyPackages.${system};
 
     # Helper to reduce boilerplate for standalone HM configurations.
-    mkHome = modules: home-manager.lib.homeManagerConfiguration {
-      inherit pkgs;
-      extraSpecialArgs = { inherit inputs; };
-      inherit modules;
-    };
+    # isNixOS: set to true when embedding HM inside a NixOS configuration so
+    # that activation scripts which modify system files (e.g. /etc/zshenv,
+    # /etc/shells) are skipped as NixOS manages those itself.
+    mkHome = { modules, isNixOS ? false }:
+      home-manager.lib.homeManagerConfiguration {
+        inherit pkgs;
+        extraSpecialArgs = { inherit inputs isNixOS; };
+        inherit modules;
+      };
   in
   {
     # -------------------------------------------------------------------------
@@ -50,9 +54,9 @@
     # -------------------------------------------------------------------------
     # Standalone Home Manager configurations (non-NixOS machines)
     #
-    # Bootstrap on any new machine (run once):
-    #   nix --extra-experimental-features "nix-command flakes" \
-    #     run home-manager/release-24.11 -- switch \
+    # Bootstrap on any new machine with Nix installed (run once):
+    #   NIX_CONFIG="experimental-features = nix-command flakes" \
+    #     nix run home-manager/release-24.11 -- switch \
     #     --flake github:dandyrow/nix-config#dandyrow
     #
     # On subsequent runs (after experimental-features is in nix.conf):
@@ -62,7 +66,7 @@
     # Switch with: home-manager switch --flake .#dandyrow@<hostname>
     # -------------------------------------------------------------------------
     homeConfigurations = {
-      "dandyrow" = mkHome [ ./home/default.nix ];
+      "dandyrow" = mkHome { modules = [ ./home/default.nix ]; };
     };
   };
 }
