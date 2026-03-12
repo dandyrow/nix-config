@@ -21,6 +21,10 @@
     experimental-features = nix-command flakes
   '';
 
+  # Prepend ~/.nix-profile/bin to PATH so nix-installed tools are found after
+  # bootstrap. This is injected into hm-session-vars.sh which .zshrc sources.
+  home.sessionPath = [ "$HOME/.nix-profile/bin" ];
+
   # Packages whose config lives in the dotfiles repo.
   home.packages = with pkgs; [
     bat
