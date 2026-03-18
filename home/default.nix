@@ -1,7 +1,7 @@
 # Shared Home Manager configuration — imported by every machine (NixOS and
 # standalone alike). Imports the dotfiles module which wires up live symlinks
 # to the raw config files and auto-clones the dotfiles repo if absent.
-{ inputs, pkgs, lib, isNixOS ? false, ... }: {
+{ inputs, pkgs, lib, isNixOS ? false, isWSL ? false, ... }: {
   imports = [ inputs.dotfiles.homeManagerModules.default ];
 
   home.username      = "dandyrow";
@@ -31,12 +31,27 @@
     btop
     eza
     fastfetch
+    fd
+    fzf
+    gcc
+    gh
+    go
     git
+    gnumake
     neovim
+    nodejs
+    python3
+    python3Packages.pip
+    ripgrep
     starship
     tmux
+    tree-sitter
+    unzip
     yazi
+    zoxide
     zsh
+  ] ++ lib.optionals isWSL [
+    wl-clipboard
   ];
 
   # On non-NixOS machines configure the system to use nix-installed zsh.

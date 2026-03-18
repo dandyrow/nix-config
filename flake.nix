@@ -22,10 +22,12 @@
     # isNixOS: set to true when embedding HM inside a NixOS configuration so
     # that activation scripts which modify system files (e.g. /etc/zshenv,
     # /etc/shells) are skipped as NixOS manages those itself.
-    mkHome = { modules, isNixOS ? false }:
+    # isWSL: set to true for machines running under WSL to include
+    # WSL-specific packages (e.g. wl-clipboard for Windows clipboard integration).
+    mkHome = { modules, isNixOS ? false, isWSL ? false }:
       home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
-        extraSpecialArgs = { inherit inputs isNixOS; };
+        extraSpecialArgs = { inherit inputs isNixOS isWSL; };
         inherit modules;
       };
   in
@@ -57,16 +59,16 @@
     # Bootstrap on any new machine with Nix installed (run once):
     #   NIX_CONFIG="experimental-features = nix-command flakes" \
     #     nix run home-manager/release-24.11 -- switch \
-    #     --flake github:dandyrow/nix-config#dandyrow
+    #     --flake github:dandyrow/nix-config#dandyrow --refresh
     #
     # On subsequent runs (after experimental-features is in nix.conf):
-    #   home-manager switch --flake github:dandyrow/nix-config#dandyrow
+    #   home-manager switch --flake github:dandyrow/nix-config#dandyrow --refresh
     #
     # Machine-specific configs import default.nix plus a host module.
     # Switch with: home-manager switch --flake .#dandyrow@<hostname>
     # -------------------------------------------------------------------------
     homeConfigurations = {
-      "dandyrow" = mkHome { modules = [ ./home/default.nix ]; };
+      "dandyrow" = mkHome { modules = [ ./home/default.nix ]; isWSL = true; };
     };
   };
 }
