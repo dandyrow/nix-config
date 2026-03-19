@@ -59,14 +59,26 @@
   # users.users.<name>.shell in the system configuration.
   home.activation.setupSystem = lib.mkIf (!isNixOS)
     (lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      if ! grep -qF 'ZDOTDIR' /etc/zshenv 2>/dev/null; then
-        printf 'export ZDOTDIR="%s/.config/zsh"\n' "$HOME" \
-          | sudo tee -a /etc/zshenv >/dev/null
+      if command -v sudo >/dev/null 2>&1; then
+        _priv="sudo"
+      elif command -v doas >/dev/null 2>&1; then
+        _priv="doas"
+      else
+        echo "Warning: no sudo or doas found, skipping system modifications"
+        _priv=""
       fi
 
       ZSH="$HOME/.nix-profile/bin/zsh"
-      if ! grep -qF "$ZSH" /etc/shells 2>/dev/null; then
-        echo "$ZSH" | sudo tee -a /etc/shells >/dev/null
+
+      if [ -n "$_priv" ]; then
+        if ! grep -qF 'ZDOTDIR' /etc/zshenv 2>/dev/null; then
+          printf 'export ZDOTDIR="%s/.config/zsh"\n' "$HOME" \
+            | $_priv tee -a /etc/zshenv >/dev/null
+        fi
+
+        if ! grep -qF "$ZSH" /etc/shells 2>/dev/null; then
+          echo "$ZSH" | $_priv tee -a /etc/shells >/dev/null
+        fi
       fi
 
       if [ "$SHELL" != "$ZSH" ]; then
