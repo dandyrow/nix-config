@@ -40,8 +40,7 @@
     gnumake
     neovim
     nodejs
-    python3
-    python3Packages.pip
+    (python3.withPackages (ps: [ ps.pip ]))
     ripgrep
     starship
     tmux
