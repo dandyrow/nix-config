@@ -9,11 +9,12 @@
 
   programs.zsh.enable = true;
 
+  users.defaultUserShell = pkgs.zsh;
+
   hardware.cpu.amd.updateMicrocode = true;
 
   users.users.dandyrow = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ];
-    shell = pkgs.zsh;
   };
 }
