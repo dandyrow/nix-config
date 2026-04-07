@@ -24,6 +24,13 @@
     }];
   };
 
+  programs.gnupg.agent.enable = true;
+
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false;
+  };
+
   users.users.dandyrow = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ];
