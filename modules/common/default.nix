@@ -1,7 +1,21 @@
 # Common NixOS configuration shared across all machines.
 # Imported by every host's configuration.nix.
-#
-# Add shared system config here as you build out your NixOS machines:
-# locale, timezone, base system packages, user accounts, SSH, etc.
-{ ... }: {
+{ pkgs, ... }: {
+  time.timeZone = "Europe/Dublin";
+
+  i18n.defaultLocale = "en_IE.UTF-8";
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  nixpkgs.config.allowUnfree = true;
+
+  programs.zsh.enable = true;
+
+  hardware.cpu.amd.updateMicrocode = true;
+
+  users.users.dandyrow = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" "networkmanager" ];
+    shell = pkgs.zsh;
+  };
 }

@@ -34,24 +34,36 @@
   {
     # -------------------------------------------------------------------------
     # NixOS system configurations
-    # Add one entry per NixOS machine as you set them up, e.g.:
-    #
-    #   nixosConfigurations.my-desktop = nixpkgs.lib.nixosSystem {
-    #     inherit system;
-    #     specialArgs = { inherit inputs; };
-    #     modules = [
-    #       ./hosts/my-desktop/configuration.nix
-    #       home-manager.nixosModules.home-manager
-    #       {
-    #         home-manager.useGlobalPkgs = true;
-    #         home-manager.useUserPackages = true;
-    #         home-manager.extraSpecialArgs = { inherit inputs; };
-    #         home-manager.users.dandyrow = import ./home/default.nix;
-    #       }
-    #     ];
-    #   };
+    # Add one entry per NixOS machine as you set them up.
     # -------------------------------------------------------------------------
-    nixosConfigurations = {};
+    nixosConfigurations = {
+      New-H0Ryzen = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/New-H0Ryzen/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            # isNixOS = true skips the activation script in home/default.nix
+            # that manually edits /etc/zshenv and /etc/shells — NixOS handles
+            # those via programs.zsh.enable and users.users.dandyrow.shell.
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              isNixOS = true;
+              isWSL   = false;
+            };
+            home-manager.users.dandyrow = {
+              imports = [
+                ./home/default.nix
+                ./home/profiles/desktop.nix
+              ];
+            };
+          }
+        ];
+      };
+    };
 
     # -------------------------------------------------------------------------
     # Standalone Home Manager configurations (non-NixOS machines)
