@@ -26,6 +26,10 @@
 
   programs.gnupg.agent.enable = true;
 
+  services.xserver.xkb.layout = "gb";
+
+  console.keyMap = "uk";
+
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = false;
