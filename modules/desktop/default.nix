@@ -1,10 +1,4 @@
-# Desktop/laptop NixOS configuration.
-# Imported by desktop and laptop hosts.
 { pkgs, config, ... }: {
-  # ---------------------------------------------------------------------------
-  # Display manager + desktop environment (Wayland / GNOME)
-  # ---------------------------------------------------------------------------
-
   services.displayManager.gdm = {
     enable = true;
     wayland = true;
@@ -13,10 +7,6 @@
   services.desktopManager.gnome.enable = true;
 
   programs.xwayland.enable = true;
-
-  # ---------------------------------------------------------------------------
-  # NVIDIA GPU drivers
-  # ---------------------------------------------------------------------------
 
   # Tell the display stack to use the NVIDIA driver.
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -32,16 +22,11 @@
     # Install nvidia-settings for tweaking GPU options from the desktop.
     nvidiaSettings = true;
 
-    # Use the stable driver branch
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
   # Hardware graphics acceleration (required for Wayland compositing).
   hardware.graphics.enable = true;
-
-  # ---------------------------------------------------------------------------
-  # Audio via PipeWire
-  # ---------------------------------------------------------------------------
 
   services.pipewire = {
     enable = true;
@@ -52,10 +37,6 @@
 
   # RTKit gives PipeWire real-time scheduling priority.
   security.rtkit.enable = true;
-
-  # ---------------------------------------------------------------------------
-  # Networking
-  # ---------------------------------------------------------------------------
 
   networking.networkmanager.enable = true;
 }

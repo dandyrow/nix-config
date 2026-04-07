@@ -1,7 +1,7 @@
-# Machine-specific NixOS configuration for New-H0Ryzen (desktop).
 { inputs, pkgs, ... }: {
   imports = [
     ./hardware-configuration.nix
+    ./disk-config.nix
     ../../modules/common/default.nix
     ../../modules/desktop/default.nix
     ../../modules/vm/default.nix

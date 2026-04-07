@@ -11,9 +11,14 @@
 
     # Home Manager module to create live symlinks to config files within repo.
     dotfiles.url = "github:dandyrow/dotfiles";
+
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, dotfiles, ... }@inputs:
+  outputs = { self, nixpkgs, home-manager, dotfiles, disko, ... }@inputs:
   let
     system = "x86_64-linux";
     pkgs   = nixpkgs.legacyPackages.${system};
@@ -32,16 +37,13 @@
       };
   in
   {
-    # -------------------------------------------------------------------------
-    # NixOS system configurations
-    # Add one entry per NixOS machine as you set them up.
-    # -------------------------------------------------------------------------
     nixosConfigurations = {
       New-H0Ryzen = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
         modules = [
           ./hosts/New-H0Ryzen/configuration.nix
+          disko.nixosModules.disko
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
@@ -65,20 +67,6 @@
       };
     };
 
-    # -------------------------------------------------------------------------
-    # Standalone Home Manager configurations (non-NixOS machines)
-    #
-    # Bootstrap on any new machine with Nix installed (run once):
-    #   NIX_CONFIG="experimental-features = nix-command flakes" \
-    #     nix run home-manager/release-24.11 -- switch \
-    #     --flake github:dandyrow/nix-config#dandyrow --refresh
-    #
-    # On subsequent runs (after experimental-features is in nix.conf):
-    #   home-manager switch --flake github:dandyrow/nix-config#dandyrow --refresh
-    #
-    # Machine-specific configs import default.nix plus a host module.
-    # Switch with: home-manager switch --flake .#dandyrow@<hostname>
-    # -------------------------------------------------------------------------
     homeConfigurations = {
       "dandyrow" = mkHome { modules = [ ./home/default.nix ]; isWSL = true; };
     };

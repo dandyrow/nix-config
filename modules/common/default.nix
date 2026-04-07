@@ -1,5 +1,3 @@
-# Common NixOS configuration shared across all machines.
-# Imported by every host's configuration.nix.
 { pkgs, ... }: {
   time.timeZone = "Europe/Dublin";
 
