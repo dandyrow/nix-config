@@ -9,7 +9,12 @@
 
   networking.hostName = "New-H0Ryzen";
 
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.systemd-boot = {
+    enable = true;
+    configurationLimit = 10;
+  };
+  # Timeout of 0 boots immediately. Hold Space during boot to access the menu.
+  boot.loader.timeout = 0;
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Do not change this value after the initial install. It pins the
