@@ -39,4 +39,5 @@
   networking.networkmanager.enable = true;
 
   programs.steam.enable = true;
+  programs.firefox.enable = true;
 }
