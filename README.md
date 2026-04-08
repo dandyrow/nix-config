@@ -11,17 +11,15 @@ can be edited in place without re-running a switch.
 flake.nix                        # Entry point — all inputs and outputs
 home/
   default.nix                    # Home Manager config shared by every machine
-  profiles/
-    desktop.nix                  # Additional HM config for desktop/laptop machines
-    server.nix                   # Additional HM config for servers
+  profiles/                      # Role-specific HM additions (desktop, server)
 hosts/
-  New-H0Ryzen/
+  <hostname>/
     configuration.nix            # Machine-specific NixOS config
     disk-config.nix              # Declarative disk layout (disko)
-    hardware-configuration.nix   # QEMU hardware config
+    hardware-configuration.nix   # Hardware-specific kernel modules and settings
 modules/
   common/                        # Shared NixOS config (all hosts)
-  desktop/                       # Desktop NixOS config (GNOME, Wayland, NVIDIA)
+  desktop/                       # Desktop NixOS config (GNOME, Wayland, Steam)
   server/                        # Server NixOS config
   vm/                            # VM guest config (QEMU guest agent)
 ```
@@ -30,30 +28,39 @@ modules/
 
 | Hostname | Type | Config |
 |---|---|---|
+| `DansSpectre` | NixOS — HP Spectre x360 15-ch005na | GNOME, Wayland, AMD GPU (Vega M GL) |
 | `New-H0Ryzen` | NixOS — QEMU/KVM VM on Proxmox | GNOME, Wayland, NVIDIA (VFIO passthrough) |
 | `dandyrow` | Standalone Home Manager — WSL | Base dotfiles only |
 
-## Installing NixOS (New-H0Ryzen)
+## Installing NixOS on a new machine
 
 Installation is handled by [nixos-anywhere](https://github.com/nix-community/nixos-anywhere),
-which SSHes into the target VM (booted from the NixOS minimal installer ISO),
+which SSHes into the target machine (booted from the NixOS minimal installer ISO),
 uses [disko](https://github.com/nix-community/disko) to partition and format
 the disk, then installs NixOS from this flake.
 
-**Prerequisites:** the target VM must be running and reachable over SSH as `root`.
+**Prerequisites:** the target machine must be running and reachable over SSH as `root`.
 
 ```bash
-nix run github:nix-community/nixos-anywhere -- --flake .#New-H0Ryzen root@<vm-ip>
+nix run github:nix-community/nixos-anywhere -- --flake .#<hostname> root@<ip>
 ```
 
-After the install completes nixos-anywhere reboots the VM into the new system.
+After the install completes nixos-anywhere reboots the machine into the new system.
 Home Manager runs automatically on first login and clones `~/.dotfiles` via the
 activation script in `home/default.nix`.
 
 ## Updating an existing NixOS system
 
+Run on the machine itself after pulling the latest config:
+
 ```bash
-nixos-rebuild switch --flake .#New-H0Ryzen
+nixos-rebuild switch --flake .#<hostname>
+```
+
+Or build and switch remotely:
+
+```bash
+nixos-rebuild switch --flake .#<hostname> --target-host root@<ip>
 ```
 
 ## Bootstrapping Home Manager (non-NixOS machines)
