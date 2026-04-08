@@ -38,5 +38,20 @@
   # RTKit gives PipeWire real-time scheduling priority.
   security.rtkit.enable = true;
 
+  services.printing = {
+    enable = true;
+    # Allow any user to manage printers without a password prompt.
+    allowFrom = [ "localhost" ];
+  };
+
+  # Passwordless print queue management for users.
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id.indexOf("com.redhat.cups") == 0 && subject.isInGroup("users")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   networking.networkmanager.enable = true;
 }
