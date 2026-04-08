@@ -37,4 +37,6 @@
   '';
 
   networking.networkmanager.enable = true;
+
+  programs.steam.enable = true;
 }
