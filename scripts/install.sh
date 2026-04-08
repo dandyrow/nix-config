@@ -20,7 +20,7 @@ run_mkpasswd() {
     mkpasswd -m sha-512 "$1"
   else
     echo "mkpasswd not found on PATH — running via nix shell (this may take a moment)..." >&2
-    nix shell nixpkgs#whois --command mkpasswd -m sha-512 "$1"
+    nix shell nixpkgs#mkpasswd --command mkpasswd -m sha-512 "$1"
   fi
 }
 
