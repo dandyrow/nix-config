@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ pkgs, ... }: {
   services.displayManager.gdm = {
     enable = true;
     wayland = true;
@@ -7,23 +7,6 @@
   services.desktopManager.gnome.enable = true;
 
   programs.xwayland.enable = true;
-
-  # Tell the display stack to use the NVIDIA driver.
-  services.xserver.videoDrivers = [ "nvidia" ];
-
-  hardware.nvidia = {
-    # Kernel mode-setting is required for Wayland to work with NVIDIA.
-    modesetting.enable = true;
-
-    # Use the proprietary driver. Set to true to use the open-source kernel
-    # modules instead — only supported on Turing (RTX 20xx) and newer GPUs.
-    open = false;
-
-    # Install nvidia-settings for tweaking GPU options from the desktop.
-    nvidiaSettings = true;
-
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
-  };
 
   # Hardware graphics acceleration (required for Wayland compositing).
   hardware.graphics.enable = true;

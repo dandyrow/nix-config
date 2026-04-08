@@ -18,8 +18,6 @@
 
   users.defaultUserShell = pkgs.zsh;
 
-  hardware.cpu.amd.updateMicrocode = true;
-
   security.sudo.enable = false;
 
   security.doas = {

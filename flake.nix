@@ -38,6 +38,31 @@
   in
   {
     nixosConfigurations = {
+      DansSpectre = nixpkgs.lib.nixosSystem {
+        inherit system;
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./hosts/DansSpectre/configuration.nix
+          disko.nixosModules.disko
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.extraSpecialArgs = {
+              inherit inputs;
+              isNixOS = true;
+              isWSL   = false;
+            };
+            home-manager.users.dandyrow = {
+              imports = [
+                ./home/default.nix
+                ./home/profiles/desktop.nix
+              ];
+            };
+          }
+        ];
+      };
+
       New-H0Ryzen = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit inputs; };
