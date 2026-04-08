@@ -16,6 +16,12 @@
   # Tell the display stack to use the AMD driver.
   services.xserver.videoDrivers = [ "amdgpu" ];
 
+  hardware.bluetooth = {
+    enable = true;
+    # Power on the adapter at boot so it is ready without manual intervention.
+    powerOnBoot = true;
+  };
+
   boot.loader = {
     systemd-boot = {
       enable = true;
