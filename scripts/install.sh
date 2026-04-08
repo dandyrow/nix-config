@@ -2,7 +2,7 @@
 # install.sh — Install NixOS on a target machine using nixos-anywhere.
 #
 # Usage:
-#   ./scripts/install.sh [hostname] [ip]
+#   ./scripts/install.sh [hostname] [ip] [ssh-user]
 #
 # Arguments are optional — the script will prompt for any that are missing.
 # The user account password is always prompted for interactively and is never
@@ -28,6 +28,7 @@ run_mkpasswd() {
 
 HOSTNAME="${1:-}"
 IP="${2:-}"
+SSH_USER="${3:-}"
 
 if [[ -z "$HOSTNAME" ]]; then
   read -rp "Hostname: " HOSTNAME
@@ -35,6 +36,11 @@ fi
 
 if [[ -z "$IP" ]]; then
   read -rp "Target IP address: " IP
+fi
+
+if [[ -z "$SSH_USER" ]]; then
+  read -rp "SSH user (default: root): " SSH_USER
+  SSH_USER="${SSH_USER:-root}"
 fi
 
 [[ -n "$HOSTNAME" ]] || die "hostname must not be empty"
@@ -83,9 +89,9 @@ unset HASH
 
 # --- Install -----------------------------------------------------------------
 
-echo "Starting nixos-anywhere install of '$HOSTNAME' on root@$IP ..."
+echo "Starting nixos-anywhere install of '$HOSTNAME' on $SSH_USER@$IP ..."
 
 nix run github:nix-community/nixos-anywhere -- \
   --extra-files "$WORK_DIR" \
   --flake ".#$HOSTNAME" \
-  "root@$IP"
+  "$SSH_USER@$IP"
