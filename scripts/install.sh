@@ -2,7 +2,7 @@
 # install.sh — Install NixOS on a target machine using nixos-anywhere.
 #
 # Usage:
-#   ./scripts/install.sh [hostname] [ip] [ssh-user]
+#   ./scripts/install.sh [hostname] [ip] [ssh-user] [build-on]
 #
 # Arguments are optional — the script will prompt for any that are missing.
 # The user account password is always prompted for interactively and is never
@@ -43,8 +43,17 @@ if [[ -z "$SSH_USER" ]]; then
   SSH_USER="${SSH_USER:-root}"
 fi
 
+BUILD_ON="${4:-}"
+
+if [[ -z "$BUILD_ON" ]]; then
+  read -rp "Build location — local, remote, auto (default: auto): " BUILD_ON
+  BUILD_ON="${BUILD_ON:-auto}"
+fi
+
 [[ -n "$HOSTNAME" ]] || die "hostname must not be empty"
 [[ -n "$IP" ]]       || die "ip address must not be empty"
+[[ "$BUILD_ON" == "local" || "$BUILD_ON" == "remote" || "$BUILD_ON" == "auto" ]] \
+  || die "build-on must be one of: local, remote, auto"
 
 # --- Validate hostname against flake -----------------------------------------
 
@@ -92,6 +101,7 @@ unset HASH
 echo "Starting nixos-anywhere install of '$HOSTNAME' on $SSH_USER@$IP ..."
 
 nix run github:nix-community/nixos-anywhere -- \
+  --build-on "$BUILD_ON" \
   --extra-files "$WORK_DIR" \
   --flake ".#$HOSTNAME" \
   "$SSH_USER@$IP"

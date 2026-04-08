@@ -42,8 +42,19 @@ the disk, then installs NixOS from this flake.
 **Prerequisites:** the target machine must be running and reachable over SSH as `root`.
 
 ```bash
-./scripts/install.sh <hostname> <ip>
+./scripts/install.sh <hostname> <ip> [ssh-user] [build-on]
 ```
+
+| Argument | Description | Default |
+|---|---|---|
+| `hostname` | Name of the `nixosConfiguration` to install | prompted |
+| `ip` | IP address of the target machine | prompted |
+| `ssh-user` | SSH user to connect to the target as | `root` |
+| `build-on` | Where Nix builds happen: `local`, `remote`, or `auto` | `auto` |
+
+All arguments are optional — the script will prompt for any that are missing.
+`build-on remote` causes the target machine to download and build everything
+itself, which avoids transferring large store paths over SSH.
 
 The script validates the hostname against the flake, prompts for the `dandyrow`
 user password (with confirmation), hashes it, and passes it to nixos-anywhere
