@@ -43,5 +43,11 @@
   users.users.dandyrow = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" ];
+    # Hash is injected at install time via nixos-anywhere --extra-files.
+    # Never committed in plaintext — see README for the install procedure.
+    hashedPasswordFile = "/etc/secrets/dandyrow-password";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0aD5czQSOcwjOH2snxFNmoG3BWd/F6fX1ngZcIo+j3 work-machine"
+    ];
   };
 }

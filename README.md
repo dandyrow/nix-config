@@ -41,8 +41,24 @@ the disk, then installs NixOS from this flake.
 
 **Prerequisites:** the target machine must be running and reachable over SSH as `root`.
 
+The `dandyrow` user account requires a hashed password to be injected at install
+time. The hash is written to `/etc/secrets/dandyrow-password` on the target via
+`--extra-files` and is never committed to the repo.
+
 ```bash
-nix run github:nix-community/nixos-anywhere -- --flake .#<hostname> root@<ip>
+# Prompt for a password and generate a sha-512 hash (requires whois/mkpasswd)
+HASH=$(mkpasswd -m sha-512)
+
+# Stage the hash as a file for nixos-anywhere to place on the target
+TMPDIR=$(mktemp -d)
+mkdir -p "$TMPDIR/etc/secrets"
+echo "$HASH" > "$TMPDIR/etc/secrets/dandyrow-password"
+
+nix run github:nix-community/nixos-anywhere -- \
+  --extra-files "$TMPDIR" \
+  --flake .#<hostname> root@<ip>
+
+rm -rf "$TMPDIR"
 ```
 
 After the install completes nixos-anywhere reboots the machine into the new system.
